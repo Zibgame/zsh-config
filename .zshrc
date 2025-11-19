@@ -19,6 +19,7 @@ plugins=(git)
 
 source $ZSH/oh-my-zsh.sh
 unalias gup 2>/dev/null
+unalias glog 2>/dev/null
 
 
 ############################################################
