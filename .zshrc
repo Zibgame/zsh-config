@@ -16,6 +16,10 @@ export MAIL="zcadinot@student.42lehavre.fr"
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
 plugins=(git)
+zstyle ':completion:*' rehash true
+zstyle ':completion:*' menu select
+setopt correct
+setopt autocd
 
 source $ZSH/oh-my-zsh.sh
 unalias gup 2>/dev/null
@@ -133,6 +137,54 @@ cheat() {
   echo "📚 Cheatsheet C :"
   echo "strlen / strcpy / strcmp / malloc / free / atoi / itoa / write / open / close"
 }
+
+clip() {
+  if [ -z "$1" ]; then
+    echo "Usage : clip <file>"
+    return 1
+  fi
+
+  if [ ! -f "$1" ]; then
+    echo "❌ Fichier introuvable : $1"
+    return 1
+  fi
+
+  # 1) wl-copy / xclip (préféré)
+  if command -v wl-copy >/dev/null 2>&1; then
+    wl-copy < "$1" && echo "📋 Copié avec wl-copy" && return 0
+  fi
+  if command -v xclip >/dev/null 2>&1; then
+    xclip -selection clipboard < "$1" && echo "📋 Copié avec xclip" && return 0
+  fi
+
+  # 2) tmux clipboard
+  if [ -n "$TMUX" ] && command -v tmux >/dev/null 2>&1; then
+    tmux load-buffer "$1" >/dev/null 2>&1 && {
+      echo "📋 Copié dans le buffer tmux"
+      return 0
+    }
+  fi
+
+  # 3) OSC52 chunké pour Zsh
+  local esc=$'\033'
+  local bel=$'\007'
+  local size=4096
+  local b64=$(base64 < "$1" | tr -d '\n')
+  local len=${#b64}
+  local i=0
+  local chunk
+
+  while [ $i -lt $len ]; do
+    chunk=${b64:$i:$size}
+    printf '%b]52;c;%s%b' "$esc" "$chunk" "$bel"
+    i=$(( i + size ))
+  done
+
+  echo "📋 Copie envoyée via OSC52"
+  return 0
+}
+
+f() { find . -iname "*$1*" 2>/dev/null; }
 
 
 ############################################################
