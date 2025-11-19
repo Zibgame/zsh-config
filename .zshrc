@@ -7,6 +7,7 @@ export PATH="$HOME/.local/node/bin:$PATH"
 export PATH="$HOME/.local/node/node-v22/bin:$PATH"
 export PATH="$HOME/.local/kitty.app/bin:$PATH"
 export PATH="$HOME/.npm-global/bin:$PATH"
+export MAIL="zcadinot@student.42lehavre.fr"
 export LANG="en_US.UTF-8"
 
 #############################################
